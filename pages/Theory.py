@@ -15,8 +15,8 @@ st.logo(
 )
 
 st.set_page_config(
-  page_title="iitj_ml_learrning",
-  page_icon="🔍",
+  page_title="iitj-ml-learning",
+  page_icon=":material/brain:",
   layout="wide",
   initial_sidebar_state="expanded",
 ) 
