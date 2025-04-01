@@ -6,6 +6,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
+from sklearn.metrics import mean_squared_error  # Added import
+
 
 # Load and preprocess data
 @st.cache_data
@@ -55,67 +57,6 @@ model = Pipeline(
 )
 model.fit(X_train, y_train)
 
-# Add custom CSS styling
-st.markdown(
-    """
-    <style>
-    /* General styling */
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f5f5f5;
-    }
-
-    /* Title styling */
-    .title {
-        color: #2c6cc4;
-        text-align: center;
-        padding: 2rem 0;
-        font-size: 2.5rem;
-    }
-
-    /* Input containers */
-    .stTextInput, .stNumberInput {
-        background-color: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-    }
-
-    /* Buttons */
-    .stButton button {
-        background-color: #2c6cc4;
-        color: white;
-        border-radius: 8px;
-        padding: 1rem 2rem;
-        font-size: 1.1rem;
-    }
-    .stButton button:hover {
-        background-color: #1a4795;
-    }
-
-    /* Result display */
-    .result {
-        background-color: #e8f5e9;
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin: 2rem 0;
-        text-align: center;
-        font-size: 1.5rem;
-        color: #2d6a4f;
-    }
-
-    /* Container padding */
-    .stApp {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
 # Streamlit App
 # Title
 st.markdown('<h1 class="title">Student Performance Predictor</h1>', unsafe_allow_html=True)
@@ -131,14 +72,15 @@ for feature in features:
             key=feature,
         )
     else:
-        min_val = df[feature].min()
-        max_val = df[feature].max()
+        min_val = float(df[feature].min())
+        max_val = float(df[feature].max())
+        step = 1.0 if feature != "Sample Question Papers Practiced" else 0.5
         user_inputs[feature] = st.number_input(
             f"{feature.replace('_', ' ').title()}",
             min_value=min_val,
             max_value=max_val,
-            value=(min_val + max_val) // 2,
-            step=1 if feature != "Sample Question Papers Practiced" else 0.5,
+            value=(min_val + max_val) / 2,
+            step=step,
             key=feature,
         )
 
