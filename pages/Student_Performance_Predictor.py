@@ -83,12 +83,14 @@ for feature in features:
             step=step,
             key=f"{feature}_input",
         )
-        # Store the input value in session state
-        st.session_state[f"{feature}_value"] = user_inputs[feature]
 
 # Prediction button with error handling
 if st.button("Predict Performance"):
     try:
+        # Store the input values in session state
+        for feature in features:
+            st.session_state[f"{feature}_value"] = user_inputs[feature]
+        
         # Convert user inputs to a DataFrame
         input_df = pd.DataFrame([user_inputs])
         
