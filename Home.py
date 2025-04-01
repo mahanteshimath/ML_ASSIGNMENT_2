@@ -16,7 +16,7 @@ st.logo(
 
 st.set_page_config(
   page_title="iitj-ml-learning",
-  page_icon=":material/brain:",
+  page_icon=":material/cognition:",
   layout="wide",
   initial_sidebar_state="expanded",
 ) 
@@ -32,7 +32,7 @@ pg1 = st.Page(
 pg2 = st.Page(
     "pages/Student_Performance_Predictor.py",
     title="Student Performance Predictor",
-    icon=":material/brain:"
+    icon=":material/cognition:"
 )
 
 pg = st.navigation(
