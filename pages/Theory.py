@@ -13,7 +13,7 @@ st.logo(
 )
 
 st.set_page_config(
-  page_title="iitj-ml-learning",
+  page_title="iitj-ml-learnings",
   page_icon=":material/brain:",
   layout="wide",
   initial_sidebar_state="expanded",
