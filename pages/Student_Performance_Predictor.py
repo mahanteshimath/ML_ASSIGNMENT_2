@@ -12,8 +12,8 @@ from sklearn.metrics import mean_squared_error  # Added import
 # Load and preprocess data
 @st.cache_data
 def load_data():
-
-    df = pd.read_csv("../data/Student_Performance.csv")
+    # Update the file path to the correct location
+    df = pd.read_csv("d:/IITJ AI/ML/Assignment 2/ML_ASSIGNMENT_2/data/Student_Performance.csv")
     return df
 
 df = load_data()
