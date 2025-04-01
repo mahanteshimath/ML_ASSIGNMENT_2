@@ -21,7 +21,6 @@ st.set_page_config(
   initial_sidebar_state="expanded",
 ) 
 
-# --- Info ---
 
 pg1 = st.Page(
     "pages/Theory.py",
