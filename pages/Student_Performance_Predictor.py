@@ -69,7 +69,7 @@ for feature in features:
         user_inputs[feature] = st.selectbox(
             f"{feature.replace('_', ' ').title()}",
             ["Yes", "No"],
-            key=feature,
+            key=f"{feature}_input",
         )
     else:
         min_val = float(df[feature].min())
@@ -79,10 +79,12 @@ for feature in features:
             f"{feature.replace('_', ' ').title()}",
             min_value=min_val,
             max_value=max_val,
-            value=(min_val + max_val) / 2,
+            value=st.session_state.get(f"{feature}_value", (min_val + max_val) / 2),
             step=step,
-            key=feature,
+            key=f"{feature}_input",
         )
+        # Store the input value in session state
+        st.session_state[f"{feature}_value"] = user_inputs[feature]
 
 # Prediction button with error handling
 if st.button("Predict Performance"):
