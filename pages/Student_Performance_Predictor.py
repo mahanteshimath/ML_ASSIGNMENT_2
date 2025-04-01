@@ -87,8 +87,23 @@ for feature in features:
 # Prediction button with error handling
 if st.button("Predict Performance"):
     try:
+        # Convert user inputs to a DataFrame
         input_df = pd.DataFrame([user_inputs])
-        prediction = model.predict(input_df)[0]
+        
+        # Ensure numeric columns are properly converted
+        for col in numeric_features:
+            if col in input_df.columns:
+                input_df[col] = pd.to_numeric(input_df[col], errors='coerce')
+        
+        # Ensure categorical columns match the expected format
+        for col in categorical_features:
+            if col in input_df.columns:
+                input_df[col] = input_df[col].astype(str)
+        
+        # Apply preprocessing and make prediction
+        processed_input = preprocessor.transform(input_df)
+        prediction = model.named_steps["regressor"].predict(processed_input)[0]
+        
         st.markdown(
             f'<div class="result">Predicted Performance Index: {prediction:.2f}</div>',
             unsafe_allow_html=True,
