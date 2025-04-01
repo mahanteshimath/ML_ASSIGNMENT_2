@@ -11,7 +11,7 @@ from sklearn.compose import ColumnTransformer
 @st.cache_data
 def load_data():
 
-    df = pd.read_csv("../data/Student_Performance.csv")
+    df = pd.read_csv("data\Student_Performance.csv")
     return df
 
 df = load_data()
