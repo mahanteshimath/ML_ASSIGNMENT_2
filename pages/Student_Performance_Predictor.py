@@ -13,7 +13,7 @@ from sklearn.metrics import mean_squared_error  # Added import
 @st.cache_data
 def load_data():
     # Update the file path to the correct location
-    df = pd.read_csv("..\data\Student_Performance.csv")
+    df = pd.read_csv("https://raw.githubusercontent.com/mahanteshimath/ML_ASSIGNMENT_2/refs/heads/main/data/Student_Performance.csv")
     return df
 
 df = load_data()
