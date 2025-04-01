@@ -84,14 +84,20 @@ for feature in features:
             key=feature,
         )
 
-# Prediction button
+# Prediction button with error handling
 if st.button("Predict Performance"):
-    input_df = pd.DataFrame([user_inputs])
-    prediction = model.predict(input_df)[0]
-    st.markdown(
-        f'<div class="result">Predicted Performance Index: {prediction:.2f}</div>',
-        unsafe_allow_html=True,
-    )
+    try:
+        input_df = pd.DataFrame([user_inputs])
+        prediction = model.predict(input_df)[0]
+        st.markdown(
+            f'<div class="result">Predicted Performance Index: {prediction:.2f}</div>',
+            unsafe_allow_html=True,
+        )
+    except Exception as e:
+        st.error(f"An error occurred during prediction: {e}")
 
-# Show model performance
-st.write("Model Performance (RMSE):", np.sqrt(mean_squared_error(y_test, model.predict(X_test))))
+# Show model performance with additional metrics
+st.write("### Model Performance Metrics:")
+rmse = np.sqrt(mean_squared_error(y_test, model.predict(X_test)))
+st.write(f"- Root Mean Squared Error (RMSE): {rmse:.2f}")
+st.write(f"- R² Score: {model.score(X_test, y_test):.2f}")
