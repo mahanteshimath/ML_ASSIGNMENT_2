@@ -15,7 +15,7 @@ st.logo(
 )
 
 st.set_page_config(
-  page_title="my_ml_learrning",
+  page_title="iitj_ml_learrning",
   page_icon="🔍",
   layout="wide",
   initial_sidebar_state="expanded",
