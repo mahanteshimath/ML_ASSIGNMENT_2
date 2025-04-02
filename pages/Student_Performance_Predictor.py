@@ -61,59 +61,64 @@ model.fit(X_train, y_train)
 # Title
 st.markdown('<h1 class="title">Student Performance Predictor</h1>', unsafe_allow_html=True)
 
-# User input section
-st.write("Enter student details:")
-user_inputs = {}
-for feature in features:
-    if feature == "Extracurricular Activities":
-        user_inputs[feature] = st.selectbox(
-            f"{feature.replace('_', ' ').title()}",
-            ["Yes", "No"],
-            key=f"{feature}_input",
-        )
-    else:
-        min_val = float(df[feature].min())
-        max_val = float(df[feature].max())
-        step = 1.0 if feature != "Sample Question Papers Practiced" else 0.5
-        user_inputs[feature] = st.number_input(
-            f"{feature.replace('_', ' ').title()}",
-            min_value=min_val,
-            max_value=max_val,
-            value=st.session_state.get(f"{feature}_value", (min_val + max_val) / 2),
-            step=step,
-            key=f"{feature}_input",
-        )
-
-# Prediction button with error handling
-if st.button("Predict Performance"):
-    try:
-        # Store the input values in session state
+# Input section in a form
+with st.container():
+    with st.form("student_input_form"):
+        st.write("Enter student details:")
+        user_inputs = {}
         for feature in features:
-            st.session_state[f"{feature}_value"] = user_inputs[feature]
-        
-        # Convert user inputs to a DataFrame
-        input_df = pd.DataFrame([user_inputs])
-        
-        # Ensure numeric columns are properly converted
-        for col in numeric_features:
-            if col in input_df.columns:
-                input_df[col] = pd.to_numeric(input_df[col], errors='coerce')
-        
-        # Ensure categorical columns match the expected format
-        for col in categorical_features:
-            if col in input_df.columns:
-                input_df[col] = input_df[col].astype(str)
-        
-        # Apply preprocessing and make prediction
-        processed_input = preprocessor.transform(input_df)
-        prediction = model.named_steps["regressor"].predict(processed_input)[0]
-        
-        st.markdown(
-            f'<div class="result">Predicted Performance Index: {prediction:.2f}</div>',
-            unsafe_allow_html=True,
-        )
-    except Exception as e:
-        st.error(f"An error occurred during prediction: {e}")
+            if feature == "Extracurricular Activities":
+                user_inputs[feature] = st.selectbox(
+                    f"{feature.replace('_', ' ').title()}",
+                    ["Yes", "No"],
+                    key=f"{feature}_input",
+                )
+            else:
+                min_val = float(df[feature].min())
+                max_val = float(df[feature].max())
+                step = 1.0 if feature != "Sample Question Papers Practiced" else 0.5
+                user_inputs[feature] = st.number_input(
+                    f"{feature.replace('_', ' ').title()}",
+                    min_value=min_val,
+                    max_value=max_val,
+                    value=st.session_state.get(f"{feature}_value", (min_val + max_val) / 2),
+                    step=step,
+                    key=f"{feature}_input",
+                )
+        # Submit button for the form
+        submitted = st.form_submit_button("Submit")
+
+# Prediction section
+if submitted:
+    with st.container():
+        try:
+            # Store the input values in session state
+            for feature in features:
+                st.session_state[f"{feature}_value"] = user_inputs[feature]
+            
+            # Convert user inputs to a DataFrame
+            input_df = pd.DataFrame([user_inputs])
+            
+            # Ensure numeric columns are properly converted
+            for col in numeric_features:
+                if col in input_df.columns:
+                    input_df[col] = pd.to_numeric(input_df[col], errors='coerce')
+            
+            # Ensure categorical columns match the expected format
+            for col in categorical_features:
+                if col in input_df.columns:
+                    input_df[col] = input_df[col].astype(str)
+            
+            # Apply preprocessing and make prediction
+            processed_input = preprocessor.transform(input_df)
+            prediction = model.named_steps["regressor"].predict(processed_input)[0]
+            
+            st.markdown(
+                f'<div class="result">Predicted Performance Index: {prediction:.2f}</div>',
+                unsafe_allow_html=True,
+            )
+        except Exception as e:
+            st.error(f"An error occurred during prediction: {e}")
 
 # Show model performance with additional metrics
 st.write("### Model Performance Metrics:")
