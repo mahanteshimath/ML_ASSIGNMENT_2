@@ -86,7 +86,7 @@ with st.container():
                     key=f"{feature}_input",
                 )
         # Submit button for the form
-        submitted = st.form_submit_button("Submit")
+        submitted = st.form_submit_button("Submit of Predictions")
 
 # Prediction section
 if submitted:
