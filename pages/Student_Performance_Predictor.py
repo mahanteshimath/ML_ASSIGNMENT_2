@@ -7,6 +7,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import mean_squared_error 
+import time  # Added import for sleep
 
 
 # Load and preprocess data
@@ -91,27 +92,42 @@ if submitted:
     with st.container():
         try:
             with st.spinner("Processing inputs and making predictions..."):
-                # Store the input values in session state
+                # Step 1: Store the input values in session state
+                st.write("Step 1: Storing input values...")
                 for feature in features:
                     st.session_state[f"{feature}_value"] = user_inputs[feature]
-                
-                # Convert user inputs to a DataFrame
+                time.sleep(1)  # Simulate delay
+
+                # Step 2: Convert user inputs to a DataFrame
+                st.write("Step 2: Converting inputs to DataFrame...")
                 input_df = pd.DataFrame([user_inputs])
-                
-                # Ensure numeric columns are properly converted
+                time.sleep(1)  # Simulate delay
+
+                # Step 3: Ensure numeric columns are properly converted
+                st.write("Step 3: Validating numeric inputs...")
                 for col in numeric_features:
                     if col in input_df.columns:
                         input_df[col] = pd.to_numeric(input_df[col], errors='coerce')
-                
-                # Ensure categorical columns match the expected format
+                time.sleep(1)  # Simulate delay
+
+                # Step 4: Ensure categorical columns match the expected format
+                st.write("Step 4: Validating categorical inputs...")
                 for col in categorical_features:
                     if col in input_df.columns:
                         input_df[col] = input_df[col].astype(str)
-                
-                # Apply preprocessing and make prediction
+                time.sleep(1)  # Simulate delay
+
+                # Step 5: Apply preprocessing
+                st.write("Step 5: Applying preprocessing...")
                 processed_input = preprocessor.transform(input_df)
+                time.sleep(1)  # Simulate delay
+
+                # Step 6: Make prediction
+                st.write("Step 6: Making prediction...")
                 prediction = model.named_steps["regressor"].predict(processed_input)[0]
-                
+                time.sleep(1)  # Simulate delay
+
+                # Display results
                 st.success("Prediction completed successfully!")
                 st.markdown(
                     f'<div class="result">Predicted Performance Index: {prediction:.2f}</div>',
