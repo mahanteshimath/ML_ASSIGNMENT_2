@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.metrics import mean_squared_error  # Added import
+from sklearn.metrics import mean_squared_error 
 
 
 # Load and preprocess data
@@ -57,8 +57,6 @@ model = Pipeline(
 )
 model.fit(X_train, y_train)
 
-# Streamlit App
-# Title
 st.markdown('<h1 class="title">Student Performance Predictor</h1>', unsafe_allow_html=True)
 
 # Input section in a form
@@ -92,36 +90,41 @@ with st.container():
 if submitted:
     with st.container():
         try:
-            # Store the input values in session state
-            for feature in features:
-                st.session_state[f"{feature}_value"] = user_inputs[feature]
-            
-            # Convert user inputs to a DataFrame
-            input_df = pd.DataFrame([user_inputs])
-            
-            # Ensure numeric columns are properly converted
-            for col in numeric_features:
-                if col in input_df.columns:
-                    input_df[col] = pd.to_numeric(input_df[col], errors='coerce')
-            
-            # Ensure categorical columns match the expected format
-            for col in categorical_features:
-                if col in input_df.columns:
-                    input_df[col] = input_df[col].astype(str)
-            
-            # Apply preprocessing and make prediction
-            processed_input = preprocessor.transform(input_df)
-            prediction = model.named_steps["regressor"].predict(processed_input)[0]
-            
-            st.markdown(
-                f'<div class="result">Predicted Performance Index: {prediction:.2f}</div>',
-                unsafe_allow_html=True,
-            )
+            with st.spinner("Processing inputs and making predictions..."):
+                # Store the input values in session state
+                for feature in features:
+                    st.session_state[f"{feature}_value"] = user_inputs[feature]
+                
+                # Convert user inputs to a DataFrame
+                input_df = pd.DataFrame([user_inputs])
+                
+                # Ensure numeric columns are properly converted
+                for col in numeric_features:
+                    if col in input_df.columns:
+                        input_df[col] = pd.to_numeric(input_df[col], errors='coerce')
+                
+                # Ensure categorical columns match the expected format
+                for col in categorical_features:
+                    if col in input_df.columns:
+                        input_df[col] = input_df[col].astype(str)
+                
+                # Apply preprocessing and make prediction
+                processed_input = preprocessor.transform(input_df)
+                prediction = model.named_steps["regressor"].predict(processed_input)[0]
+                
+                st.success("Prediction completed successfully!")
+                st.markdown(
+                    f'<div class="result">Predicted Performance Index: {prediction:.2f}</div>',
+                    unsafe_allow_html=True,
+                )
+                st.balloons()
         except Exception as e:
             st.error(f"An error occurred during prediction: {e}")
 
 # Show model performance with additional metrics
-st.write("### Model Performance Metrics:")
-rmse = np.sqrt(mean_squared_error(y_test, model.predict(X_test)))
-st.write(f"- Root Mean Squared Error (RMSE): {rmse:.2f}")
-st.write(f"- R² Score: {model.score(X_test, y_test):.2f}")
+with st.container():
+    st.write("### Model Performance Metrics:")
+    rmse = np.sqrt(mean_squared_error(y_test, model.predict(X_test)))
+    r2_score = model.score(X_test, y_test)
+    st.metric(label="Root Mean Squared Error (RMSE)", value=f"{rmse:.2f}")
+    st.metric(label="R² Score", value=f"{r2_score:.2f}")
