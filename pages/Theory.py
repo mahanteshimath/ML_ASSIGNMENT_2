@@ -1,5 +1,5 @@
 import streamlit as st
-st.subtitle(":blue[Authors: Srijit Ghatak(G24AIT2079) and Mahantesh Hiremath(G24AIT2178)]  :speech_balloon:")
+st.title(":blue[Authors: Srijit Ghatak(G24AIT2079) and Mahantesh Hiremath(G24AIT2178)]  :speech_balloon:")
 
 st.divider()
 
