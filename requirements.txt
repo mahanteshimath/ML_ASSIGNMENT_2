@@ -74,3 +74,4 @@ sympy
 scikit-learn
 statsmodels
 tensorflow
+prophet
