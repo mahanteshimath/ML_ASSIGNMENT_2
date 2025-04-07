@@ -4,7 +4,8 @@ st.divider()
 st.divider()
 st.markdown(":blue[How students can improve their performance in exams? Answer: By using this app]")
 st.markdown("This is how code working behind the scenes.")
-
+st.markdown("""
+# Student Performance Predictor"""
 ### 🧠 **1. Model Purpose**
 
 The goal of this Streamlit app is to **predict a student's "Performance Index"** based on multiple factors such as study hours, sleep, previous scores, and other activities using a **machine learning model**.
@@ -71,7 +72,6 @@ To show how well the model is performing, it also displays:
 - It also provides **transparency** in the prediction process by breaking it down step-by-step and showing **model metrics** to the user.
 - The use of **caching, session state**, and **delayed feedback** (via `time.sleep`) makes the UX smooth and interactive.
 """)
-
 st.divider()
 
 
