@@ -1,12 +1,12 @@
 import streamlit as st
-st.title("Therory") 
+st.title("Author") 
 
-st.markdown(
+st.title(
 """
 Name : Srijit Ghatak | Roll # : G24AIT2079
 
 Name : Mahantesh Hiremath | Roll # : G24AIT2178""")
-
+st.divider()
 
 
 
@@ -58,7 +58,7 @@ text-align: center;
 }
 </style>
 <div class="footer">
-<p>Developed with ❤️ by <a style='display: inline; text-align: center;' href="https://www.linkedin.com/in/mahantesh-hiremath/" target="_blank">MAHANTESH HIREMATH</a></p>
+<p>Developed with ❤️ by <a style='display: inline; text-align: center;' href="https://iitj-ml-learnings.streamlit.app/" target="_blank">Srijit and Mahantesh</a></p>
 </div>
 """
 st.markdown(footer,unsafe_allow_html=True)  
