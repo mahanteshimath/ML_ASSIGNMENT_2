@@ -1,11 +1,8 @@
 import streamlit as st
-st.markdown(":blue[Authors: Srijit Ghatak(G24AIT2079) and Mahantesh Hiremath(G24AIT2178)]  :speech_balloon:")
+st.markdown(":blue[# Authors: Srijit Ghatak(G24AIT2079) and Mahantesh Hiremath(G24AIT2178)]  :speech_balloon:")
 st.divider()
-
-st.markdown(":blue[How students can improve their performance in exams? Answer: By using this app]")
-st.markdown("This is how code working behind the scenes.")
 st.markdown("""
-# Student Performance Predictor
+# Student Performance Predictor working
 ### 🧠 **1. Model Purpose**
 
 The goal of this Streamlit app is to **predict a student's "Performance Index"** based on multiple factors such as study hours, sleep, previous scores, and other activities using a **machine learning model**.
