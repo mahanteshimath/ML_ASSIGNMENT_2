@@ -1,7 +1,7 @@
 import streamlit as st
 st.markdown(":blue[Authors: Srijit Ghatak(G24AIT2079) and Mahantesh Hiremath(G24AIT2178)]  :speech_balloon:")
 st.divider()
-st.divider()
+
 st.markdown(":blue[How students can improve their performance in exams? Answer: By using this app]")
 st.markdown("This is how code working behind the scenes.")
 st.markdown("""
@@ -10,7 +10,7 @@ st.markdown("""
 
 The goal of this Streamlit app is to **predict a student's "Performance Index"** based on multiple factors such as study hours, sleep, previous scores, and other activities using a **machine learning model**.
 
----
+
 
 ### 🔍 **2. Data Used**
 
@@ -23,7 +23,7 @@ The app loads a dataset containing various student attributes and their correspo
 
 These are used to predict the **Performance Index**, which is the target variable.
 
----
+
 
 ### 🏗️ **3. Model Architecture**
 
@@ -31,7 +31,7 @@ The app uses a **machine learning pipeline** that includes:
 - **Preprocessing** of numerical and categorical data
 - A **Random Forest Regressor**, which is an ensemble of decision trees
 
----
+
 
 ### 🔄 **4. How Prediction Happens (Step-by-Step)**
 
@@ -56,7 +56,7 @@ The preprocessed data is passed to the **Random Forest Regressor**, which:
 
 The result is a **continuous numeric prediction** representing how well the student is expected to perform.
 
----
+
 
 ### 📈 **5. Model Evaluation**
 
@@ -64,7 +64,7 @@ To show how well the model is performing, it also displays:
 - **Root Mean Squared Error (RMSE)**: Lower is better; shows how far predictions are from actual values.
 - **R² Score**: Ranges from 0 to 1; closer to 1 means better predictive power.
 
----
+
 
 ### 🎯 Summary
 
