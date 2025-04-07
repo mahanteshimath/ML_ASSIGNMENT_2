@@ -24,7 +24,9 @@ st.subheader("📊 Raw Data Preview")
 st.dataframe(df.head(), use_container_width=True)
 
 # Rename columns for Prophet
-df = df.rename(columns={'Date': 'ds', 'Close': 'y'})
+# Verify column names before renaming
+st.write("Columns in dataset:", df.columns.tolist())
+df = df.rename(columns={'Date': 'ds', 'Close*': 'y'})  # Adjust 'Close*' to match the actual column name
 df = df[['ds', 'y']]
 
 # Sidebar for forecast years
