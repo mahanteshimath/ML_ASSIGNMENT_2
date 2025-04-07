@@ -6,7 +6,7 @@ from statsmodels.tsa.arima.model import ARIMA
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Load data
 @st.cache_data
@@ -118,33 +118,64 @@ if 'forecast' in st.session_state:
         rmse = np.sqrt(np.mean((forecast['Prediction'] - test_df['Close/Last'])**2))
     st.write(f"RMSE: {rmse:.2f}")
 
-# Future prediction
-st.subheader("Predict Future Prices")
-days = st.number_input("Days to Predict", min_value=1, max_value=30, value=7)
-if st.button("Predict Future"):
+# Future prediction with sliding window
+st.subheader("Extended Forecast to 2050")
+end_year = st.number_input("Predict up to Year", min_value=2023, max_value=2050, value=2050)
+if st.button("Generate Long-Term Forecast"):
     if model_choice == "LSTM":
         if 'lstm_model' in st.session_state and 'scaler' in st.session_state:
             model = st.session_state.lstm_model
             scaler = st.session_state.scaler
-            last_days = df[-look_back:]['Close/Last'].values.reshape(-1, 1)
-            scaled = scaler.transform(last_days)
-            X_test = np.array([scaled[-look_back:]])
-            X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
-            future_pred = model.predict(X_test)
-            future_pred = scaler.inverse_transform(future_pred)[0][0]
-            st.write(f"Predicted closing price in {days} days: {future_pred:.2f}")
+            
+            # Initialize with last 'look_back' days
+            last_days = df[-look_back:]['Close/Last'].values
+            history = list(last_days)
+            predictions = []
+            start_date = df['Date'].iloc[-1]
+            target_year = end_year
+            current_date = start_date
+            
+            while current_date.year < target_year:
+                # Prepare input (last 'look_back' days)
+                X = np.array(history[-look_back:]).reshape(1, look_back, 1)
+                # Predict next day
+                scaled_pred = model.predict(X)
+                pred = scaler.inverse_transform(scaled_pred)[0][0]
+                predictions.append(pred)
+                history.append(pred)
+                current_date += timedelta(days=1)
+            
+            # Create DataFrame for predictions
+            dates = pd.date_range(start=df['Date'].iloc[-1], periods=len(predictions)+1, freq='D')[1:]
+            forecast_df = pd.DataFrame({'Date': dates, 'Prediction': predictions})
+            
+            st.write(f"Sliding Window Forecast up to {end_year}:")
+            st.line_chart(forecast_df.set_index('Date'))
+            st.warning("⚠️ LSTM predictions beyond 30 days may drift due to compounding errors.")
         else:
             st.warning("Train the LSTM model first!")
     else:
-        st.warning("ARIMA future prediction not implemented yet.")
+        # ARIMA multi-step forecast
+        train = df['Close/Last'].values
+        model = ARIMA(train, order=(1,1,1))
+        model_fit = model.fit()
+        
+        # Calculate steps to 2050
+        end_date = datetime(end_year, 12, 31)
+        steps = (end_date - df['Date'].iloc[-1]).days
+        forecast_values = model_fit.forecast(steps=steps)[0]
+        
+        dates = pd.date_range(start=df['Date'].iloc[-1], periods=steps+1, freq='D')[1:]
+        forecast_df = pd.DataFrame({'Date': dates, 'Prediction': forecast_values})
+        
+        st.write(f"ARIMA Forecast up to {end_year}:")
+        st.line_chart(forecast_df.set_index('Date'))
+        st.warning("⚠️ ARIMA may not capture long-term trends accurately.")
 
 # Display raw data
 if st.checkbox("Show Raw Data"):
     st.subheader("Raw Data")
     st.write(df.head(10))
-
-
-
 
 
 
