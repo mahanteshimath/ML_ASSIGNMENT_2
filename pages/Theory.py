@@ -1,5 +1,5 @@
 import streamlit as st
-st.markdown("# :blue[ Authors: Srijit Ghatak(G24AIT2079) and Mahantesh Hiremath(G24AIT2178)]  :speech_balloon:")
+st.markdown("### :blue[ Authors: Srijit Ghatak(G24AIT2079) and Mahantesh Hiremath(G24AIT2178)]  :speech_balloon:")
 st.divider()
 st.markdown("""
 # Student Performance Predictor working
