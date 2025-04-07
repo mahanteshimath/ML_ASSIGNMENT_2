@@ -1,11 +1,6 @@
 import streamlit as st
-st.title("Author") 
+st.title(":blue["Authors: Srijit Ghatak | Roll: G24AIT2079  Name : Mahantesh Hiremath | Roll : G24AIT2178] :speech_balloon:")
 
-st.title(
-"""
-Name : Srijit Ghatak | Roll # : G24AIT2079
-
-Name : Mahantesh Hiremath | Roll # : G24AIT2178""")
 st.divider()
 
 
