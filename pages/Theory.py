@@ -1,6 +1,11 @@
 import streamlit as st
 st.title("Therory") 
 
+st.markdown(
+"""
+Name : Srijit Ghatak | Roll # : G24AIT2079
+
+Name : Mahantesh Hiremath | Roll # : G24AIT2178""")
 
 
 
