@@ -1,55 +1,73 @@
-# Future prediction
-st.subheader("Predict Future Prices")
-days = st.number_input("Days to Predict", min_value=1, max_value=30, value=7)
-if st.button("Predict Future"):
-    if model_choice == "LSTM":
-        if 'lstm_model' in st.session_state and 'scaler' in st.session_state:
-            try:
-                model = st.session_state.lstm_model
-                scaler = st.session_state.scaler
-                last_days = df[-look_back:]['Close/Last'].values.reshape(-1, 1)
-                scaled = scaler.transform(last_days)
-                X_test = np.array([scaled[-look_back:]])
-                X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
-                future_pred = model.predict(X_test)
-                future_pred = scaler.inverse_transform(future_pred)[0][0]
-                st.write(f"Predicted closing price in {days} days: {future_pred:.2f}")
-            except Exception as e:
-                st.error(f"Error during future prediction: {e}")
-        else:
-            st.warning("Train the LSTM model first!")
-    else:
-        if 'forecast' in st.session_state:
-            try:
-                train = df['Close/Last'].values
-                model = ARIMA(train, order=(1, 1, 1))
-                model_fit = model.fit()
-                forecast_values = model_fit.forecast(steps=days)[0]
-                future_dates = pd.date_range(start=df['Date'].iloc[-1], periods=days + 1, freq='D')[1:]
-                future_df = pd.DataFrame({'Date': future_dates, 'Prediction': forecast_values})
-                st.write(future_df)
-                st.line_chart(future_df.set_index('Date')['Prediction'])
-            except Exception as e:
-                st.error(f"Error during ARIMA future prediction: {e}")
-        else:
-            st.warning("Train the ARIMA model first!")
+import streamlit as st
+import pandas as pd
+from prophet import Prophet
+import matplotlib.pyplot as plt
 
-# Add axis labels to all graphs
-def plot_predictions(test_dates, actual, predicted, model_name):
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(test_dates, actual, label='Actual')
-    ax.plot(test_dates, predicted, label='Predicted')
-    ax.set_title(f"{model_name} Predictions")
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Closing Price (INR)')
-    ax.legend()
-    st.pyplot(fig)
 
-st.subheader("Historical Closing Prices")
-fig, ax = plt.subplots(figsize=(12, 6))
-ax.plot(df['Date'], df['Close/Last'], label='Closing Price')
-ax.set_title("Historical Closing Prices")
-ax.set_xlabel("Date")
-ax.set_ylabel("Closing Price (INR)")
-ax.legend()
-st.pyplot(fig)
+st.title("💸 USD to INR Exchange Rate Forecast (Till 2050)")
+
+# 🔁 Cached data loading from GitHub
+@st.cache_data
+def load_data():
+    url = "https://raw.githubusercontent.com/mahanteshimath/ML_ASSIGNMENT_2/refs/heads/main/data/HistoricalData_Currency.csv"
+    df = pd.read_csv(url)
+    df['Date'] = pd.to_datetime(df['Date'], format='%m/%d/%Y')
+    df = df.sort_values('Date').reset_index(drop=True)
+    df = df.drop(columns=['Volume']).dropna()
+    return df
+
+# Load data
+df = load_data()
+
+# Preview data
+st.subheader("📊 Raw Data Preview")
+st.dataframe(df.head(), use_container_width=True)
+
+# Rename columns for Prophet
+df = df.rename(columns={'Date': 'ds', 'Close': 'y'})
+df = df[['ds', 'y']]
+
+# Sidebar for forecast years
+st.sidebar.header("🔧 Forecast Settings")
+forecast_years = st.sidebar.slider(
+    "Select number of years to forecast:",
+    min_value=1,
+    max_value=30,
+    value=27,
+    help="Forecast horizon from 1 to 30 years"
+)
+forecast_days = forecast_years * 365
+last_year = df['ds'].dt.year.max()
+
+# Train Prophet
+st.subheader("⚙️ Training Prophet Model...")
+model = Prophet()
+model.fit(df)
+
+# Forecast
+future = model.make_future_dataframe(periods=forecast_days)
+forecast = model.predict(future)
+
+# Forecast plot
+st.subheader(f"📈 Forecasted USD to INR till {last_year + forecast_years}")
+fig1 = model.plot(forecast)
+st.pyplot(fig1)
+
+# Components
+with st.expander("🔍 Show Forecast Components (Trend, Weekly, Yearly Seasonality)"):
+    fig2 = model.plot_components(forecast)
+    st.pyplot(fig2)
+
+# Forecast table
+st.subheader("📄 Forecast Table (Last 30 Days)")
+forecast_display = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(30)
+st.dataframe(forecast_display, use_container_width=True)
+
+# Download CSV
+st.subheader("⬇️ Download Forecast CSV")
+st.download_button(
+    label="Download Full Forecast as CSV",
+    data=forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].to_csv(index=False),
+    file_name="USD_INR_Forecast.csv",
+    mime="text/csv"
+)
