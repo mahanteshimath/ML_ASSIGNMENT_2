@@ -1,13 +1,11 @@
 import streamlit as st
-st.markdown(":blue[# Authors: Srijit Ghatak(G24AIT2079) and Mahantesh Hiremath(G24AIT2178)]  :speech_balloon:")
+st.markdown("# :blue[ Authors: Srijit Ghatak(G24AIT2079) and Mahantesh Hiremath(G24AIT2178)]  :speech_balloon:")
 st.divider()
 st.markdown("""
 # Student Performance Predictor working
 ### 🧠 **1. Model Purpose**
 
 The goal of this Streamlit app is to **predict a student's "Performance Index"** based on multiple factors such as study hours, sleep, previous scores, and other activities using a **machine learning model**.
-
-
 
 ### 🔍 **2. Data Used**
 
@@ -20,15 +18,11 @@ The app loads a dataset containing various student attributes and their correspo
 
 These are used to predict the **Performance Index**, which is the target variable.
 
-
-
 ### 🏗️ **3. Model Architecture**
 
 The app uses a **machine learning pipeline** that includes:
 - **Preprocessing** of numerical and categorical data
 - A **Random Forest Regressor**, which is an ensemble of decision trees
-
-
 
 ### 🔄 **4. How Prediction Happens (Step-by-Step)**
 
