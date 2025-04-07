@@ -34,10 +34,16 @@ pg2 = st.Page(
     icon=":material/cognition:"
 )
 
+pg3 = st.Page(
+    "pages/Rupee_Price_Prediction.py",
+    title="Rupee Price Prediction",
+    icon=":material/currency_rupee:"
+)
+
 pg = st.navigation(
     {
         "Info": [pg1],
-        "ML Practicals": [pg2],
+        "ML Practicals": [pg2, pg3],
     }
 )
 

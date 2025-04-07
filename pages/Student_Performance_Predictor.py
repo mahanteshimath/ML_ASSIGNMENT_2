@@ -144,3 +144,43 @@ with st.container():
     r2_score = model.score(X_test, y_test)
     st.metric(label="Root Mean Squared Error (RMSE)", value=f"{rmse:.2f}")
     st.metric(label="R² Score", value=f"{r2_score:.2f}")
+
+
+
+
+
+
+
+st.markdown(
+    '''
+    <style>
+    .streamlit-expanderHeader {
+        background-color: blue;
+        color: white; # Adjust this for expander header color
+    }
+    .streamlit-expanderContent {
+        background-color: blue;
+        color: white; # Expander content color
+    }
+    </style>
+    ''',
+    unsafe_allow_html=True
+)
+
+footer="""<style>
+
+.footer {
+position: fixed;
+left: 0;
+bottom: 0;
+width: 100%;
+background-color: #2C1E5B;
+color: white;
+text-align: center;
+}
+</style>
+<div class="footer">
+<p>Developed with ❤️ by <a style='display: inline; text-align: center;' href="https://iitj-ml-learnings.streamlit.app/" target="_blank">Srijit and Mahantesh</a></p>
+</div>
+"""
+st.markdown(footer,unsafe_allow_html=True)  
