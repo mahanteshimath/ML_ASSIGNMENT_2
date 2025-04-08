@@ -4,8 +4,15 @@ from prophet import Prophet
 from prophet.plot import plot_plotly, plot_components_plotly
 import matplotlib.pyplot as plt
 import numpy as np
-from pmdarima import auto_arima
-from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+# Try importing SARIMA related packages with error handling
+try:
+    from pmdarima import auto_arima
+    from statsmodels.tsa.statespace.sarimax import SARIMAX
+    SARIMA_AVAILABLE = True
+except ImportError:
+    SARIMA_AVAILABLE = False
+    st.warning("SARIMA functionality is not available. Only Prophet model will be used.")
 
 
 # Custom styled title
@@ -141,52 +148,55 @@ st.plotly_chart(fig2, use_container_width=True)
 st.divider()
 
 # SARIMA Model Section
-st.header("Alternative Model: SARIMA Forecast")
-with st.spinner("Training SARIMA Model..."):
-    train_data = processed_df.set_index('ds')['y']
-    
-    # Auto ARIMA
-    stepwise_model = auto_arima(
-        train_data,
-        start_p=1, start_q=1,
-        max_p=5, max_q=5,
-        m=7,
-        seasonal=True,
-        stepwise=True,
-        suppress_warnings=True,
-        error_action='ignore',
-        trace=False
-    )
-    
-    sarima_model = SARIMAX(
-        train_data,
-        order=stepwise_model.order,
-        seasonal_order=stepwise_model.seasonal_order
-    )
-    results = sarima_model.fit(disp=False)
-    st.success(f"✅ SARIMA model trained successfully")
+if SARIMA_AVAILABLE:
+    st.header("Alternative Model: SARIMA Forecast")
+    with st.spinner("Training SARIMA Model..."):
+        train_data = processed_df.set_index('ds')['y']
+        
+        # Auto ARIMA
+        stepwise_model = auto_arima(
+            train_data,
+            start_p=1, start_q=1,
+            max_p=5, max_q=5,
+            m=7,
+            seasonal=True,
+            stepwise=True,
+            suppress_warnings=True,
+            error_action='ignore',
+            trace=False
+        )
+        
+        sarima_model = SARIMAX(
+            train_data,
+            order=stepwise_model.order,
+            seasonal_order=stepwise_model.seasonal_order
+        )
+        results = sarima_model.fit(disp=False)
+        st.success(f"✅ SARIMA model trained successfully")
 
-# SARIMA forecast visualization
-forecast_sarima = results.get_forecast(steps=forecast_days)
-pred_ci = forecast_sarima.conf_int()
-start_date = processed_df['ds'].max() + pd.Timedelta(days=1)
-forecast_dates = pd.date_range(start=start_date, periods=forecast_days, freq='D')
+    # SARIMA forecast visualization
+    forecast_sarima = results.get_forecast(steps=forecast_days)
+    pred_ci = forecast_sarima.conf_int()
+    start_date = processed_df['ds'].max() + pd.Timedelta(days=1)
+    forecast_dates = pd.date_range(start=start_date, periods=forecast_days, freq='D')
 
-fig_sarima = plt.figure(figsize=(12, 6))
-plt.plot(train_data.index, train_data.values, label='Historical Data', alpha=0.5)
-plt.plot(forecast_dates, forecast_sarima.predicted_mean, label='SARIMA Forecast')
-plt.fill_between(
-    forecast_dates,
-    pred_ci.iloc[:, 0],
-    pred_ci.iloc[:, 1],
-    color='pink',
-    alpha=0.3
-)
-plt.title(f"SARIMA Forecast till {end_year}")
-plt.xlabel("Date")
-plt.ylabel("Exchange Rate (USD to INR)")
-plt.legend()
-st.pyplot(fig_sarima)
+    fig_sarima = plt.figure(figsize=(12, 6))
+    plt.plot(train_data.index, train_data.values, label='Historical Data', alpha=0.5)
+    plt.plot(forecast_dates, forecast_sarima.predicted_mean, label='SARIMA Forecast')
+    plt.fill_between(
+        forecast_dates,
+        pred_ci.iloc[:, 0],
+        pred_ci.iloc[:, 1],
+        color='pink',
+        alpha=0.3
+    )
+    plt.title(f"SARIMA Forecast till {end_year}")
+    plt.xlabel("Date")
+    plt.ylabel("Exchange Rate (USD to INR)")
+    plt.legend()
+    st.pyplot(fig_sarima)
+else:
+    st.info("SARIMA model is not available in this deployment. Using only Prophet model for forecasting.")
 
 # Model Comparison
 st.header("📊 Model Comparison")
@@ -195,8 +205,9 @@ with col1:
     rmse_prophet = np.sqrt(np.mean((forecast['yhat'].values[:len(processed_df)] - processed_df['y'].values) ** 2))
     st.metric("Prophet RMSE", f"{rmse_prophet:.2f}")
 with col2:
-    rmse_sarima = np.sqrt(np.mean((results.fittedvalues - train_data) ** 2))
-    st.metric("SARIMA RMSE", f"{rmse_sarima:.2f}")
+    if SARIMA_AVAILABLE:
+        rmse_sarima = np.sqrt(np.mean((results.fittedvalues - train_data) ** 2))
+        st.metric("SARIMA RMSE", f"{rmse_sarima:.2f}")
 
 # Model limitations disclaimer
 st.warning(
@@ -237,4 +248,4 @@ text-align: center;
 <p>Developed with ❤️ by <a style='display: inline; text-align: center;' href="https://iitj-ml-learnings.streamlit.app/" target="_blank">Srijit and Mahantesh</a></p>
 </div>
 """
-st.markdown(footer,unsafe_allow_html=True)  
+st.markdown(footer,unsafe_allow_html=True)
