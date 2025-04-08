@@ -123,7 +123,6 @@ SARIMA (Seasonal ARIMA) is a **classical statistical model** for time series dat
 - Fits the model to the known time series by estimating parameters.
 - Then projects future values step by step using these learned relationships.
 
----
 
 ## 📊 Model Comparison
 After training both models:
