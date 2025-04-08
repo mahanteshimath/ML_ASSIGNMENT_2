@@ -65,7 +65,88 @@ To show how well the model is performing, it also displays:
 """)
 st.divider()
 st.markdown("""
-# Rupee Price Prediction working""")
+# Rupee Price Prediction working
+
+
+## 🔮 App Purpose
+The Streamlit app forecasts the **USD to INR exchange rate till 2050** using **two time series models**:
+1. **Prophet (by Meta)**
+2. **SARIMA (from statsmodels)** – if available.
+
+
+
+## 🔍 Data Used
+The app loads historical exchange rate data from a CSV file hosted on GitHub. The key column used for prediction is:
+- **Date** (`ds`) – the time index
+- **Exchange Rate** (`y`) – the value to forecast
+
+
+
+## 🤖 Prophet Model: How It Works
+Prophet is a **decomposable time series model**. It tries to break the time series into components and model each separately:
+
+### 🧱 Prophet’s Components:
+1. **Trend**  
+   - Learns how the exchange rate changes over time (e.g., linear rise/fall).
+   - Automatically finds **changepoints** where the trend shifts significantly.
+
+2. **Seasonality**  
+   - Captures repeating patterns (like yearly or weekly fluctuations).
+   - Uses **Fourier series** to model smooth, cyclical patterns.
+
+3. **Holidays (Optional)**  
+   - Not used here, but can model one-time events like policy changes or crises.
+
+### 🔮 How Prophet Makes Predictions:
+- It fits the model to historical data to learn trend and seasonal patterns.
+- Then it **projects those patterns into the future** (till the year 2050 in this case).
+- Also provides **uncertainty intervals** using statistical techniques like Monte Carlo simulations.
+
+
+## 📉 SARIMA Model (if installed): How It Works
+SARIMA (Seasonal ARIMA) is a **classical statistical model** for time series data.
+
+### 🧠 What SARIMA Learns:
+1. **Autoregressive (AR) Part**  
+   - Predicts current value using past values (lags).
+
+2. **Integrated (I) Part**  
+   - Makes the time series stationary by differencing the data.
+
+3. **Moving Average (MA) Part**  
+   - Accounts for errors made by the model in previous time steps.
+
+4. **Seasonal Components**  
+   - Like AR/MA but applied on seasonal lags (e.g., 12 months apart for yearly seasonality).
+
+### 📈 How SARIMA Predicts:
+- Fits the model to the known time series by estimating parameters.
+- Then projects future values step by step using these learned relationships.
+
+---
+
+## 📊 Model Comparison
+After training both models:
+- The app calculates **RMSE, MAE, and R² score** to evaluate performance.
+- Displays plots of:
+  - The actual historical trend.
+  - The future forecast with confidence bands (for Prophet).
+  - Decomposition of components (e.g., trend + seasonality).
+  - SARIMA results (as a static matplotlib plot).
+
+
+## 🧠 Model Insights
+- **Prophet** is better at long-term forecasting and handling multiple seasonality.
+- **SARIMA** is often better at capturing short-term dependencies but needs more tuning.
+- Prophet offers **interactive Plotly plots** and is more **intuitive** to use with dates.
+- The app helps visualize the **trajectory of USD to INR rate** with multiple models and easy-to-read charts.
+
+
+
+## ⚠️ Disclaimer
+The app also reminds users that forecasts are based purely on historical patterns and **cannot account for future economic shocks, policies, or geopolitical changes**.
+
+""")
 
 
 
