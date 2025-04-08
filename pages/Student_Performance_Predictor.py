@@ -58,7 +58,21 @@ model = Pipeline(
 )
 model.fit(X_train, y_train)
 
-st.markdown('<h1 class="title">Student Performance Predictor</h1>', unsafe_allow_html=True)
+# st.markdown('<h1 class="title">Student Performance Predictor</h1>', unsafe_allow_html=True)
+
+
+# Custom styled title
+st.markdown(
+    """
+    <div style='text-align: center; padding: 20px; background-color: #f0f8ff; border-radius: 10px;'>
+        <h1 style='color: #2c7be5; margin: 0;'>Student Performance Predictor</h1>
+        <p style='color: #333; font-size: 18px; margin-top: 10px;'>Powered by ML Random Forest Regressor</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.write("------")
 
 # Input section in a form
 with st.container():

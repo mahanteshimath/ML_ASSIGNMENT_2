@@ -64,7 +64,8 @@ To show how well the model is performing, it also displays:
 - The use of **caching, session state**, and **delayed feedback** (via `time.sleep`) makes the UX smooth and interactive.
 """)
 st.divider()
-
+st.markdown("""
+# Rupee Price Prediction working""")
 
 
 

@@ -75,3 +75,4 @@ scikit-learn
 statsmodels
 tensorflow
 prophet
+pmdarima
