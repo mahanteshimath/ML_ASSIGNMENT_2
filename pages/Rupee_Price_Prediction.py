@@ -148,6 +148,35 @@ st.plotly_chart(fig2, use_container_width=True)
 
 st.divider()
 
+# After Prophet visualization section, before SARIMA section
+st.subheader("🔍 Prophet Forecast Preview")
+# Prepare Prophet forecast data for display
+prophet_preview = pd.DataFrame({
+    'Date': forecast['ds'],
+    'Predicted Rate': forecast['yhat'].round(2),
+    'Lower Bound': forecast['yhat_lower'].round(2),
+    'Upper Bound': forecast['yhat_upper'].round(2)
+})
+prophet_preview.set_index('Date', inplace=True)
+
+# Display Prophet preview
+st.dataframe(
+    prophet_preview.tail(10),
+    use_container_width=True,
+    height=200
+)
+
+# Download button for Prophet forecast
+csv_prophet = prophet_preview.to_csv()
+st.download_button(
+    label="📥 Download Prophet Forecast",
+    data=csv_prophet,
+    file_name="prophet_forecast.csv",
+    mime="text/csv"
+)
+
+st.divider()
+
 # SARIMA Model Section
 if SARIMA_AVAILABLE:
     st.header("Alternative Model: SARIMA Forecast")
@@ -190,6 +219,32 @@ if SARIMA_AVAILABLE:
             st.error(f"Error in SARIMA modeling: {str(e)}")
             st.info("Falling back to Prophet-only forecast")
             SARIMA_AVAILABLE = False
+
+    st.subheader("🔍 SARIMA Forecast Preview")
+    # Prepare SARIMA forecast data for display
+    sarima_preview = pd.DataFrame({
+        'Date': forecast_dates,
+        'Predicted Rate': forecast_sarima.round(2)
+    })
+    sarima_preview.set_index('Date', inplace=True)
+
+    # Display SARIMA preview
+    st.dataframe(
+        sarima_preview.tail(10),
+        use_container_width=True,
+        height=200
+    )
+
+    # Download button for SARIMA forecast
+    csv_sarima = sarima_preview.to_csv()
+    st.download_button(
+        label="📥 Download SARIMA Forecast",
+        data=csv_sarima,
+        file_name="sarima_forecast.csv",
+        mime="text/csv"
+    )
+
+    st.divider()
 
 # Model Performance Comparison
 st.header("📊 Model Performance Comparison")
