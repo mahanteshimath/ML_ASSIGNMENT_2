@@ -3,11 +3,11 @@ st.markdown("### :blue[ Authors: Srijit Ghatak(G24AIT2079) and Mahantesh Hiremat
 st.divider()
 st.markdown("""
 # Student Performance Predictor working
-### 🧠 **1. Model Purpose**
+### 🧠 **Model Purpose**
 
 The goal of this Streamlit app is to **predict a student's "Performance Index"** based on multiple factors such as study hours, sleep, previous scores, and other activities using a **machine learning model**.
 
-### 🔍 **2. Data Used**
+### 🔍 **Data Used**
 
 The app loads a dataset containing various student attributes and their corresponding performance scores. The dataset includes features like:
 - **Hours Studied**
@@ -18,13 +18,13 @@ The app loads a dataset containing various student attributes and their correspo
 
 These are used to predict the **Performance Index**, which is the target variable.
 
-### 🏗️ **3. Model Architecture**
+### 🏗️ **Model Architecture**
 
 The app uses a **machine learning pipeline** that includes:
 - **Preprocessing** of numerical and categorical data
 - A **Random Forest Regressor**, which is an ensemble of decision trees
 
-### 🔄 **4. How Prediction Happens (Step-by-Step)**
+### 🔄 **How Prediction Happens (Step-by-Step)**
 
 Here’s what happens behind the scenes when a user inputs values and clicks **"Submit for Predictions"**:
 
@@ -49,7 +49,7 @@ The result is a **continuous numeric prediction** representing how well the stud
 
 
 
-### 📈 **5. Model Evaluation**
+### 📈 **Model Evaluation**
 
 To show how well the model is performing, it also displays:
 - **Root Mean Squared Error (RMSE)**: Lower is better; shows how far predictions are from actual values.
