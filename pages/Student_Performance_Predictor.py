@@ -144,7 +144,7 @@ if submitted:
                 # Display results
                 st.success("Prediction completed successfully!")
                 st.markdown(
-                    f'<div class="result"><strong>Predicted Performance Index: {prediction:.2f}</strong></div>',
+                    f'<div style="background-color: #f0f8ff; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0;"><h2 style="color: #2c7be5; font-size: 32px;">Predicted Performance Index: {prediction:.2f}</h2></div>',
                     unsafe_allow_html=True,
                 )
                 st.balloons()
