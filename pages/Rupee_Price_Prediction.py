@@ -5,22 +5,21 @@ from prophet.plot import plot_plotly, plot_components_plotly
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Try importing SARIMA related packages with error handling
+# Careful SARIMA imports with detailed error handling
 try:
-    from pmdarima import auto_arima
     from statsmodels.tsa.statespace.sarimax import SARIMAX
+    from statsmodels.tsa.arima.model import ARIMA
     SARIMA_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     SARIMA_AVAILABLE = False
-    st.warning("SARIMA functionality is not available. Only Prophet model will be used.")
+    st.warning("SARIMA functionality is not available. Using only Prophet model.")
 
-
-# Custom styled title
+# Custom styled title with updated text
 st.markdown(
     """
     <div style='text-align: center; padding: 20px; background-color: #f0f8ff; border-radius: 10px;'>
         <h1 style='color: #2c7be5; margin: 0;'>💸 USD to INR Exchange Rate Forecast (Till 2050)</h1>
-        <p style='color: #333; font-size: 18px; margin-top: 10px;'>Compare Prophet & SARIMA Models</p>
+        <p style='color: #333; font-size: 18px; margin-top: 10px;'>Powered by Prophet Time Series Forecasting</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -151,70 +150,93 @@ st.divider()
 if SARIMA_AVAILABLE:
     st.header("Alternative Model: SARIMA Forecast")
     with st.spinner("Training SARIMA Model..."):
-        train_data = processed_df.set_index('ds')['y']
-        
-        # Auto ARIMA
-        stepwise_model = auto_arima(
-            train_data,
-            start_p=1, start_q=1,
-            max_p=5, max_q=5,
-            m=7,
-            seasonal=True,
-            stepwise=True,
-            suppress_warnings=True,
-            error_action='ignore',
-            trace=False
-        )
-        
-        sarima_model = SARIMAX(
-            train_data,
-            order=stepwise_model.order,
-            seasonal_order=stepwise_model.seasonal_order
-        )
-        results = sarima_model.fit(disp=False)
-        st.success(f"✅ SARIMA model trained successfully")
+        try:
+            # Prepare data for SARIMA
+            train_data = processed_df.set_index('ds')['y']
+            
+            # Simple ARIMA model with reasonable parameters
+            sarima_model = ARIMA(
+                train_data,
+                order=(2, 1, 2),
+                seasonal_order=(1, 1, 1, 12)
+            )
+            results = sarima_model.fit()
+            st.success("✅ SARIMA model trained successfully")
 
-    # SARIMA forecast visualization
-    forecast_sarima = results.get_forecast(steps=forecast_days)
-    pred_ci = forecast_sarima.conf_int()
-    start_date = processed_df['ds'].max() + pd.Timedelta(days=1)
-    forecast_dates = pd.date_range(start=start_date, periods=forecast_days, freq='D')
+            # SARIMA forecast visualization
+            forecast_sarima = results.forecast(steps=forecast_days)
+            start_date = processed_df['ds'].max() + pd.Timedelta(days=1)
+            forecast_dates = pd.date_range(start=start_date, periods=forecast_days, freq='D')
 
-    fig_sarima = plt.figure(figsize=(12, 6))
-    plt.plot(train_data.index, train_data.values, label='Historical Data', alpha=0.5)
-    plt.plot(forecast_dates, forecast_sarima.predicted_mean, label='SARIMA Forecast')
-    plt.fill_between(
-        forecast_dates,
-        pred_ci.iloc[:, 0],
-        pred_ci.iloc[:, 1],
-        color='pink',
-        alpha=0.3
-    )
-    plt.title(f"SARIMA Forecast till {end_year}")
-    plt.xlabel("Date")
-    plt.ylabel("Exchange Rate (USD to INR)")
-    plt.legend()
-    st.pyplot(fig_sarima)
-else:
-    st.info("SARIMA model is not available in this deployment. Using only Prophet model for forecasting.")
+            # Create SARIMA plot
+            fig_sarima = plt.figure(figsize=(12, 6))
+            plt.plot(train_data.index, train_data.values, label='Historical Data', alpha=0.5)
+            plt.plot(forecast_dates, forecast_sarima, label='SARIMA Forecast')
+            plt.title(f"SARIMA Forecast till {end_year}")
+            plt.xlabel("Date")
+            plt.ylabel("Exchange Rate (USD to INR)")
+            plt.legend()
+            st.pyplot(fig_sarima)
 
-# Model Comparison
-st.header("📊 Model Comparison")
+            # Calculate SARIMA metrics
+            rmse_sarima = np.sqrt(np.mean((results.fittedvalues - train_data) ** 2))
+            st.metric("SARIMA RMSE", f"{rmse_sarima:.2f}")
+
+        except Exception as e:
+            st.error(f"Error in SARIMA modeling: {str(e)}")
+            st.info("Falling back to Prophet-only forecast")
+            SARIMA_AVAILABLE = False
+
+# Model Performance Comparison
+st.header("📊 Model Performance Comparison")
+
+# Calculate metrics for Prophet
+rmse_prophet = np.sqrt(np.mean((forecast['yhat'].values[:len(processed_df)] - processed_df['y'].values) ** 2))
+r2_prophet = 1 - np.sum((processed_df['y'].values - forecast['yhat'].values[:len(processed_df)])**2) / np.sum((processed_df['y'].values - processed_df['y'].mean())**2)
+mae_prophet = np.mean(np.abs(forecast['yhat'].values[:len(processed_df)] - processed_df['y'].values))
+
+# Create comparison columns
 col1, col2 = st.columns(2)
+
 with col1:
-    rmse_prophet = np.sqrt(np.mean((forecast['yhat'].values[:len(processed_df)] - processed_df['y'].values) ** 2))
-    st.metric("Prophet RMSE", f"{rmse_prophet:.2f}")
+    st.subheader("Prophet Model")
+    st.metric("RMSE", f"{rmse_prophet:.2f}")
+    st.metric("R² Score", f"{r2_prophet:.2f}")
+    st.metric("MAE", f"{mae_prophet:.2f}")
+
 with col2:
+    st.subheader("SARIMA Model")
     if SARIMA_AVAILABLE:
         rmse_sarima = np.sqrt(np.mean((results.fittedvalues - train_data) ** 2))
-        st.metric("SARIMA RMSE", f"{rmse_sarima:.2f}")
+        r2_sarima = 1 - np.sum((train_data - results.fittedvalues)**2) / np.sum((train_data - train_data.mean())**2)
+        mae_sarima = np.mean(np.abs(results.fittedvalues - train_data))
+        
+        st.metric("RMSE", f"{rmse_sarima:.2f}")
+        st.metric("R² Score", f"{r2_sarima:.2f}")
+        st.metric("MAE", f"{mae_sarima:.2f}")
+    else:
+        st.info("SARIMA model not available")
 
-# Model limitations disclaimer
+# Model comparison insights
+st.subheader("📈 Model Comparison Insights")
+if SARIMA_AVAILABLE:
+    better_model = "Prophet" if rmse_prophet < rmse_sarima else "SARIMA"
+    st.write(f"""
+    - **Best Performing Model**: {better_model} (based on RMSE)
+    - **Prophet Model** performs {'better' if rmse_prophet < rmse_sarima else 'worse'} at capturing long-term trends
+    - **SARIMA Model** performs {'better' if rmse_sarima < rmse_prophet else 'worse'} at capturing short-term patterns
+    """)
+else:
+    st.write("""
+    - **Prophet Model** shows good performance in capturing both trends and seasonality
+    - Consider using multiple models for more robust forecasting
+    """)
+
+# Update model limitations disclaimer
 st.warning(
-    "⚠️ Both models have their strengths: Prophet handles trends and seasonality well, " +
-    "while SARIMA captures short-term patterns. Consider both forecasts for decision-making."
+    "⚠️ Model performance metrics are based on historical fit. " +
+    "Future predictions may vary due to changing economic conditions and external factors."
 )
-
 
 st.markdown(
     '''
