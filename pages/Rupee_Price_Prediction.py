@@ -65,7 +65,7 @@ st.dataframe(
 st.write(f"📅 Data spans **{len(raw_df)}** records from {raw_df['Date'].min().date()} to {raw_df['Date'].max().date()}")
 
 st.divider()
-
+st.header(" Prophet Model Forecast")
 # Forecast settings with dynamic max
 last_year = processed_df['ds'].dt.year.max()
 max_forecast = 2050 - last_year
@@ -87,7 +87,9 @@ with st.spinner("Training Prophet Model..."):
     model = Prophet(yearly_seasonality=True, weekly_seasonality=True)
     model.fit(processed_df)
     
-st.success("✅ Model trained successfully")
+st.success("✅ Prophet Model trained successfully")
+st.toast("✅ Prophet Model trained successfully", icon='🎉')
+st.balloons()
 
 # Add model explanation
 with st.expander("🔍 How does the model work?", expanded=False):
@@ -149,7 +151,7 @@ st.divider()
 # SARIMA Model Section
 if SARIMA_AVAILABLE:
     st.header("Alternative Model: SARIMA Forecast")
-    with st.spinner("Training SARIMA Model..."):
+    with st.spinner("Training SARIMA Model...this may take a while"):
         try:
             # Prepare data for SARIMA
             train_data = processed_df.set_index('ds')['y']
@@ -162,6 +164,8 @@ if SARIMA_AVAILABLE:
             )
             results = sarima_model.fit()
             st.success("✅ SARIMA model trained successfully")
+            st.toast("✅SARIMA model trained successfully", icon='🎉')
+            st.balloons()
 
             # SARIMA forecast visualization
             forecast_sarima = results.forecast(steps=forecast_days)
