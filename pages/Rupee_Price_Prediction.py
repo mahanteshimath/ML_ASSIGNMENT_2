@@ -8,7 +8,7 @@ import numpy as np
 # Careful SARIMA imports with detailed error handling
 try:
     from statsmodels.tsa.statespace.sarimax import SARIMAX
-    from statsmodels.tsa.arima.model import ARIMA
+    from statsmodels.tsa.arima.model import SARIMA
     SARIMA_AVAILABLE = True
 except ImportError as e:
     SARIMA_AVAILABLE = False
@@ -186,7 +186,7 @@ if SARIMA_AVAILABLE:
             train_data = processed_df.set_index('ds')['y']
             
             # Simple ARIMA model with reasonable parameters
-            sarima_model = ARIMA(
+            sarima_model = SARIMA(
                 train_data,
                 order=(2, 1, 2),
                 seasonal_order=(1, 1, 1, 12)
