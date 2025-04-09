@@ -8,7 +8,7 @@ import numpy as np
 # Careful SARIMA imports with detailed error handling
 try:
     from statsmodels.tsa.statespace.sarimax import SARIMAX
-    from statsmodels.tsa.arima.model import SARIMA
+    from statsmodels.tsa.srima.model import SARIMA
     SARIMA_AVAILABLE = True
 except ImportError as e:
     SARIMA_AVAILABLE = False
